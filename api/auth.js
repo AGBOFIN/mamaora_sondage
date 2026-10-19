@@ -1,11 +1,8 @@
-// Vercel Function pour l'authentification admin
-const { createClient } = require('@supabase/supabase-js');
-
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Vercel Function pour l'authentification admin avec JWT
+const jwt = require('jsonwebtoken');
 
 const ADMIN_CODE = process.env.ADMIN_CODE;
+const JWT_SECRET = process.env.JWT_SECRET || ADMIN_CODE; // Fallback sur ADMIN_CODE si JWT_SECRET non défini
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -24,20 +21,12 @@ module.exports = async function handler(req, res) {
       return res.status(401).json({ error: 'Invalid code' });
     }
 
-    // Créer un token de session simple (expirera dans 24h)
-    const token = Buffer.from(`${Date.now()}-${code}`).toString('base64');
-
-    // Optionnel: stocker dans Supabase pour plus de sécurité
-    const { error } = await supabase
-      .from('admin_sessions')
-      .insert({
-        token,
-        expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-      });
-
-    if (error) {
-      console.error('Session error:', error);
-    }
+    // Créer un token JWT valide 8 heures
+    const token = jwt.sign(
+      { authenticated: true, timestamp: Date.now() },
+      JWT_SECRET,
+      { expiresIn: '8h' }
+    );
 
     return res.status(200).json({ success: true, token });
   } catch (error) {

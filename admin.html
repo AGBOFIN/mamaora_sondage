@@ -212,7 +212,7 @@
         const data = await response.json();
 
         if (data.success) {
-          localStorage.setItem('adminToken', data.token);
+          sessionStorage.setItem('adminToken', data.token);
           window.location.href = 'dashboard.html';
         } else {
           showError('Code incorrect');
@@ -232,7 +232,7 @@
     }
 
     // Vérifier si déjà connecté
-    const existingToken = localStorage.getItem('adminToken');
+    const existingToken = sessionStorage.getItem('adminToken');
     if (existingToken) {
       window.location.href = 'dashboard.html';
     }

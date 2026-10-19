@@ -1,5 +1,6 @@
 // Vercel Function pour supprimer une réponse (admin only)
 const { createClient } = require('@supabase/supabase-js');
+const { verifyToken } = require('./verifyToken');
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -11,27 +12,18 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { token, id } = req.query;
+    const { id } = req.query;
 
-    if (!token || !id) {
-      return res.status(400).json({ error: 'Token and ID required' });
+    if (!id) {
+      return res.status(400).json({ error: 'ID required' });
     }
 
-    // Vérifier le token
-    const { data: session, error: sessionError } = await supabase
-      .from('admin_sessions')
-      .select('*')
-      .eq('token', token)
-      .single();
+    // Vérifier le token JWT depuis l'en-tête Authorization
+    const authHeader = req.headers.authorization;
+    const decoded = verifyToken(authHeader);
 
-    if (sessionError || !session) {
-      return res.status(401).json({ error: 'Invalid token' });
-    }
-
-    // Vérifier l'expiration
-    if (new Date(session.expires_at) < new Date()) {
-      await supabase.from('admin_sessions').delete().eq('token', token);
-      return res.status(401).json({ error: 'Token expired' });
+    if (!decoded) {
+      return res.status(401).json({ error: 'Unauthorized' });
     }
 
     // Supprimer la réponse

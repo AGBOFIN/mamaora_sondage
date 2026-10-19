@@ -60,11 +60,13 @@ Ce script crée :
 | `SUPABASE_URL` | Votre Project URL Supabase | Production, Preview, Development |
 | `SUPABASE_SERVICE_ROLE_KEY` | Votre service_role key Supabase | Production, Preview, Development |
 | `ADMIN_CODE` | Votre code d'accès admin (ex: `MAMAORA2024!`) | Production, Preview, Development |
+| `JWT_SECRET` | Secret pour signer les tokens JWT (optionnel, utilise ADMIN_CODE par défaut) | Production, Preview, Development |
 
 ⚠️ **IMPORTANT** :
 - Le `ADMIN_CODE` doit être secret et complexe
 - Ne le communiquez pas publiquement
 - Changez-le régulièrement
+- `JWT_SECRET` est optionnel : si non défini, `ADMIN_CODE` sera utilisé comme secret
 
 ### 2.2 Installer les dépendances
 
@@ -139,15 +141,7 @@ git push
 1. Allez dans Vercel → Settings → Environment Variables
 2. Modifiez la variable `ADMIN_CODE`
 3. Redéployez (Vercel vous le demandera)
-4. Toutes les sessions existantes seront invalidées
-
-### Nettoyer les anciennes sessions
-
-Le script SQL inclut un nettoyage automatique. Si vous voulez le faire manuellement :
-
-```sql
-DELETE FROM admin_sessions WHERE expires_at < NOW();
-```
+4. Tous les tokens JWT existants seront invalidés (le secret a changé)
 
 ### Sauvegarder les données
 
@@ -183,15 +177,6 @@ Supabase sauvegarde automatiquement votre base de données. Pour exporter :
 | tel | TEXT | Numéro WhatsApp |
 | created_at | TIMESTAMP | Date de soumission |
 
-### Table `admin_sessions`
-
-| Colonne | Type | Description |
-|---------|------|-------------|
-| id | BIGSERIAL | ID unique (auto) |
-| token | TEXT | Token de session |
-| expires_at | TIMESTAMP | Date d'expiration |
-| created_at | TIMESTAMP | Date de création |
-
 ## 🔒 Sécurité
 
 ### Ce qui est sécurisé :
@@ -199,8 +184,9 @@ Supabase sauvegarde automatiquement votre base de données. Pour exporter :
 ✅ Le code d'accès admin n'est jamais exposé dans le code client
 ✅ Les variables d'environnement sont protégées sur Vercel
 ✅ Les politiques RLS Supabase limitent l'accès aux données
-✅ Les sessions expirent après 24h
-✅ L'authentification est vérifiée à chaque requête API
+✅ Les tokens JWT expirent après 8h
+✅ L'authentification est vérifiée à chaque requête API via JWT
+✅ Pas de stockage de session en base de données (stateless, adapté à Vercel)
 
 ### Bonnes pratiques :
 
@@ -218,9 +204,9 @@ Supabase sauvegarde automatiquement votre base de données. Pour exporter :
 - Vérifiez que la table `responses` existe dans Supabase
 - Vérifiez les logs Vercel pour plus de détails
 
-### Erreur "Invalid token"
+### Erreur "Invalid token" ou "Session expirée"
 
-- La session a peut-être expiré (24h)
+- Le token JWT a peut-être expiré (8h)
 - Reconnectez-vous sur admin.html
 - Vérifiez que `ADMIN_CODE` n'a pas changé
 

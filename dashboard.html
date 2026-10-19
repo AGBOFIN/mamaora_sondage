@@ -372,7 +372,7 @@
   </div>
 
   <script>
-    const token = localStorage.getItem('adminToken');
+    const token = sessionStorage.getItem('adminToken');
     if (!token) {
       window.location.href = 'admin.html';
     }
@@ -385,11 +385,15 @@
       loader.classList.add('active');
 
       try {
-        const response = await fetch(`/api/responses?token=${token}`);
+        const response = await fetch('/api/responses', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
 
         if (response.status === 401) {
           alert('Session expirée. Veuillez vous reconnecter.');
-          localStorage.removeItem('adminToken');
+          sessionStorage.removeItem('adminToken');
           window.location.href = 'admin.html';
           return;
         }
@@ -543,13 +547,16 @@
       if (!confirm('Êtes-vous sûr de vouloir supprimer cette réponse ?')) return;
 
       try {
-        const response = await fetch(`/api/delete?token=${token}&id=${id}`, {
-          method: 'DELETE'
+        const response = await fetch(`/api/delete?id=${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
         });
 
         if (response.status === 401) {
           alert('Session expirée. Veuillez vous reconnecter.');
-          localStorage.removeItem('adminToken');
+          sessionStorage.removeItem('adminToken');
           window.location.href = 'admin.html';
           return;
         }
@@ -621,7 +628,7 @@
     });
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('adminToken');
+      sessionStorage.removeItem('adminToken');
       window.location.href = 'admin.html';
     });
 

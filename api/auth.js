@@ -2,7 +2,7 @@
 const jwt = require('jsonwebtoken');
 
 const ADMIN_CODE = process.env.ADMIN_CODE;
-const JWT_SECRET = process.env.JWT_SECRET || ADMIN_CODE; // Fallback sur ADMIN_CODE si JWT_SECRET non défini
+const JWT_SECRET = process.env.JWT_SECRET || ADMIN_CODE;
 
 module.exports = async function handler(req, res) {
   // CORS headers

@@ -2,7 +2,16 @@
 const { createClient } = require('@supabase/supabase-js');
 const { verifyToken } = require('./verifyToken');
 
-const supabaseUrl = process.env.SUPABASE_URL;
+// Normaliser l'URL Supabase
+function normalizeSupabaseUrl(url) {
+  if (!url) return url;
+  let normalized = url.trim();
+  normalized = normalized.replace(/\/$/, '');
+  normalized = normalized.replace(/\/rest\/v1\/rest\/v1/, '/rest/v1');
+  return normalized;
+}
+
+const supabaseUrl = normalizeSupabaseUrl(process.env.SUPABASE_URL);
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -40,6 +49,8 @@ module.exports = async function handler(req, res) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
+    console.log('Supabase URL:', supabaseUrl);
+
     // Supprimer la réponse
     const { error } = await supabase
       .from('responses')
@@ -48,6 +59,7 @@ module.exports = async function handler(req, res) {
 
     if (error) {
       console.error('Error deleting response:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       return res.status(500).json({ error: `Failed to delete response: ${error.message}` });
     }
 

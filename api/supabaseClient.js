@@ -8,10 +8,11 @@ function normalizeSupabaseUrl(url) {
   // Logger pour debug (sans secret)
   console.log('Original SUPABASE_URL:', normalized);
 
-  // Supprimer tout /rest/v1 s'il existe (le client l'ajoutera automatiquement)
-  normalized = normalized.replace(/\/rest\/v1$/, '');
+  // Supprimer /rest/v1 s'il existe (le client l'ajoutera automatiquement)
+  // Doit être fait AVANT de supprimer le slash final
+  normalized = normalized.replace(/\/rest\/v1\/?$/, '');
 
-  // Supprimer le slash final
+  // Supprimer le slash final s'il reste
   normalized = normalized.replace(/\/$/, '');
 
   console.log('Normalized SUPABASE_URL:', normalized);

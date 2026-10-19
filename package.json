@@ -1,0 +1,8 @@
+{
+  "name": "mamaora-survey",
+  "version": "1.0.0",
+  "description": "MAMAORA Survey Application with Admin Dashboard",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}

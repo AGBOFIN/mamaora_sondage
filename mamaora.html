@@ -134,7 +134,7 @@ input[type=text]:focus,input[type=tel]:focus,textarea:focus{outline:none;box-sha
 </div></section>
 <section class="cta"><h2 class="disp" style="font-size:clamp(2.4rem,7vw,5rem)">Votre histoire<br>compte.</h2><a class="btn" href="#" data-start>Commencer le sondage</a></section>
 </main>
-<footer><div class="wrap">MAMAORA, Togo. Vos réponses servent uniquement à comprendre les besoins des mamans et à préparer le projet.</div></footer>
+<footer><div class="wrap">MAMAORA, Togo. Vos réponses servent uniquement à comprendre les besoins des mamans et à préparer le projet.<br><a href="admin.html" style="color:inherit;opacity:0.5;font-size:0.85rem;text-decoration:none;margin-top:0.5rem;display:inline-block">Administration</a></div></footer>
 
 <div class="stage" id="stage" data-cat="0">
  <div class="blob b1"></div><div class="blob b2"></div><div class="big" id="big" aria-hidden="true">01</div>
@@ -241,20 +241,16 @@ input[type=text]:focus,input[type=tel]:focus,textarea:focus{outline:none;box-sha
    <div class="nav2"><button class="btn ghost" type="button" id="prev">Retour</button><button class="btn" type="button" id="next">Suivant</button><button class="btn" type="submit" id="fin" style="display:none">Voir mes réponses</button></div>
   </form>
   <div class="loader" id="loader"></div>
-  <div id="done">
+<div id="done">
    <div class="success-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
    <h2 class="disp" style="font-size:3rem">Merci !</h2>
-   <p>Vos réponses sont prêtes. Cliquez sur le bouton ci-dessous pour les envoyer à l’équipe MAMAORA.</p>
-   <div class="msgbox" id="msg"></div>
-   <div class="actions"><button class="btn" id="sendBtn" type="button">Envoyer mes réponses</button></div>
-   <div class="share-section"><p>Partagez ce sondage avec d’autres mamans.</p><div class="share-buttons"><a class="btn" id="share-wa" href="#" target="_blank" rel="noopener">WhatsApp</a><button class="btn ghost" id="share-fb" type="button">Facebook</button></div></div>
-   <p class="err" id="cerr" role="status"></p>
+   <p>Vos réponses ont été envoyées avec succès à l'équipe MAMAORA.</p>
+   <a href="index.html" class="btn">Retour à l'accueil</a>
   </div>
  </div>
  <div class="intro" id="intro"><p id="introN"></p><div class="disp" id="introT"></div></div>
 </div>
 <div class="save-indicator" id="saveIndicator">Sauvegardé ✓</div>
-<div class="modal" id="sendModal"><div class="modal-content"><h3>Envoi en cours…</h3><p>Vos réponses sont en train d’être envoyées à l’équipe MAMAORA.</p><div class="loader active"></div></div></div>
 <script>
 // Numéro WhatsApp (caché de l'utilisateur)
 var WA_NUMBER = "22879060605";
@@ -265,7 +261,6 @@ var saveIndicator = document.getElementById("saveIndicator");
 var saveTimeout;
 var loader = document.getElementById("loader");
 var sendModal = document.getElementById("sendModal");
-
 // Animation des sections au scroll
 var observer = new IntersectionObserver(function(entries){
   entries.forEach(function(entry){
@@ -410,55 +405,66 @@ function buildMessage(){
 form.addEventListener("submit", function(e){
   e.preventDefault();
   var err = document.getElementById("err");
-  
+
   if (!val("situation")) { err.textContent = "Choisissez votre situation actuelle pour continuer."; document.getElementById("q-situation").scrollIntoView({block:"center"}); return; }
   if (!many("diff")) { err.textContent = "Choisissez au moins une difficulté pour continuer."; document.getElementById("q-diff").scrollIntoView({block:"center"}); return; }
-  
+
   var tel = val("tel");
   if(tel && !validateWhatsApp(tel)){
     err.textContent = "Le numéro WhatsApp semble incorrect. Veuillez vérifier le format (ex: +228 90 00 00 00).";
     document.getElementById("tel").scrollIntoView({block:"center"});
     return;
   }
-  
+
   err.textContent = "";
   loader.classList.add("active");
-  
-  setTimeout(function(){
+
+  // Collecter les données du formulaire
+  var formData = {
+    ville: val("ville"),
+    age: val("age"),
+    situation: val("situation"),
+    activite: val("activite"),
+    canaux: form.querySelectorAll('input[name="canaux"]:checked').length > 0 ? Array.prototype.map.call(form.querySelectorAll('input[name="canaux"]:checked'), function(i){ return i.value; }) : null,
+    derniere: val("derniere"),
+    diff: form.querySelectorAll('input[name="diff"]:checked').length > 0 ? Array.prototype.map.call(form.querySelectorAll('input[name="diff"]:checked'), function(i){ return i.value; }) : null,
+    paye: val("paye"),
+    paye_detail: val("paye_detail"),
+    regarder: val("regarder"),
+    raconter: val("raconter"),
+    sujets: val("sujets"),
+    annuaire: val("annuaire"),
+    prix: val("prix"),
+    libre: val("libre"),
+    prenom: val("prenom"),
+    tel: val("tel")
+  };
+
+  // Envoyer à l'API
+  fetch('/api/submit', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(formData)
+  })
+  .then(function(response){
+    if (!response.ok) throw new Error('Network response was not ok');
+    return response.json();
+  })
+  .then(function(data){
     loader.classList.remove("active");
-    var text = buildMessage();
-    document.getElementById("msg").textContent = text;
-    
-    var shareUrl = encodeURIComponent(window.location.href);
-    var shareText = encodeURIComponent("Je viens de répondre au sondage MAMAORA pour les mamans togolaises ! Rejoignez-nous : ");
-    document.getElementById("share-wa").href = "https://wa.me/?text=" + shareText + shareUrl;
-    
     form.style.display = "none";
     done.style.display = "block";
     done.scrollIntoView({block:"start"});
-  }, 1500);
+  })
+  .catch(function(error){
+    console.error('Error:', error);
+    loader.classList.remove("active");
+    err.textContent = "Une erreur est survenue. Veuillez réessayer.";
+  });
 });
 
-// Bouton d'envoi qui cache le numero et redirige
-document.getElementById("sendBtn").addEventListener("click", function(){
-  var text = document.getElementById("msg").textContent;
-  var waUrl = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(text);
-
-  // Afficher le modal de chargement
-  sendModal.classList.add("active");
-
-  // Ouvrir WhatsApp en arriere-plan
-  window.open(waUrl, "_blank");
-
-  // Rediriger vers la page vitrine apres un court delai
-  setTimeout(function(){
-    sendModal.classList.remove("active");
-    window.location.href = "index.html";
-  }, 1500);
-});
-
-document.getElementById("share-fb").addEventListener("click", function(){
-  var shareUrl = encodeURIComponent(window.location.href);
   window.open("https://www.facebook.com/sharer/sharer.php?u=" + shareUrl, "_blank", "width=600,height=400");
 });
 

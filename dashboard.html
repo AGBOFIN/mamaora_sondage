@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tableau de bord - MAMAORA</title>
+  <meta name="theme-color" content="#2d1a9c">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --indigo: #2d1a9c;
+      --ink: #120a45;
+      --pink: #ff4fa3;
+      --sun: #ffd23f;
+      --mint: #2fe0a8;
+      --paper: #f4f1ff;
+      --text: #120a45;
+      --muted: #574f8f;
+      --line: #d6cffb;
+      --err: #b3261e;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --paper: #0e0928;
+        --text: #f1eeff;
+        --muted: #b9b1ee;
+        --line: #3a2f86;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--paper);
+      color: var(--text);
+      font: 400 1.0625rem/1.55 Figtree, system-ui, sans-serif;
+      min-height: 100vh;
+    }
+    .header {
+      background: var(--indigo);
+      color: #fff;
+      padding: 1.5rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .header h1 {
+      font-family: "Bricolage Grotesque", Figtree, sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+    }
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-block;
+      border: 0;
+      border-radius: 2rem;
+      padding: 0.75rem 1.5rem;
+      font: 700 0.95rem Figtree, sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary {
+      background: var(--sun);
+      color: var(--ink);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: #fff;
+      border: 2px solid #fff;
+    }
+    .btn-danger {
+      background: var(--err);
+      color: #fff;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 rgba(0,0,0,0.2);
+    }
+    .main {
+      padding: 2rem 1.25rem;
+      max-width: 80rem;
+      margin: 0 auto;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: #fff;
+      border: 3px solid var(--ink);
+      border-radius: 1.2rem;
+      padding: 1.5rem;
+      box-shadow: 0 4px 0 var(--ink);
+    }
+    .stat-value {
+      font-family: "Bricolage Grotesque", Figtree, sans-serif;
+      font-weight: 800;
+      font-size: 2.5rem;
+      color: var(--indigo);
+    }
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
+    }
+    .toolbar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .search-box {
+      flex: 1;
+      min-width: 15rem;
+    }
+    .search-box input {
+      width: 100%;
+      font: 600 1rem Figtree, sans-serif;
+      color: var(--ink);
+      background: #fff;
+      border: 3px solid var(--ink);
+      border-radius: 1.2rem;
+      padding: 0.75rem 1rem;
+      box-shadow: 0 4px 0 var(--ink);
+    }
+    .search-box input:focus {
+      outline: none;
+      box-shadow: 0 4px 0 var(--pink), 0 0 0 3px var(--ink);
+    }
+    .filter-select {
+      font: 600 1rem Figtree, sans-serif;
+      color: var(--ink);
+      background: #fff;
+      border: 3px solid var(--ink);
+      border-radius: 1.2rem;
+      padding: 0.75rem 1rem;
+      box-shadow: 0 4px 0 var(--ink);
+      cursor: pointer;
+    }
+    .responses-table {
+      background: #fff;
+      border: 3px solid var(--ink);
+      border-radius: 1.2rem;
+      overflow: hidden;
+      box-shadow: 0 4px 0 var(--ink);
+    }
+    .table-header {
+      display: grid;
+      grid-template-columns: 2fr 1.5fr 1.5fr 1fr 1fr;
+      background: var(--ink);
+      color: #fff;
+      padding: 1rem;
+      font-weight: 700;
+      gap: 1rem;
+    }
+    .table-row {
+      display: grid;
+      grid-template-columns: 2fr 1.5fr 1.5fr 1fr 1fr;
+      padding: 1rem;
+      border-bottom: 2px solid var(--line);
+      gap: 1rem;
+      align-items: center;
+      transition: background 0.2s;
+    }
+    .table-row:hover {
+      background: var(--paper);
+    }
+    .table-row:last-child {
+      border-bottom: none;
+    }
+    .cell {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .cell-name {
+      font-weight: 600;
+    }
+    .cell-date {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .actions-cell {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .action-btn {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+      border-radius: 1.5rem;
+    }
+    .empty-state {
+      padding: 3rem;
+      text-align: center;
+      color: var(--muted);
+    }
+    .loader {
+      display: none;
+      width: 3rem;
+      height: 3rem;
+      margin: 3rem auto;
+      border: 4px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    .loader.active {
+      display: block;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(18, 10, 69, 0.85);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: #fff;
+      color: var(--ink);
+      border-radius: 1.6rem;
+      padding: 2rem;
+      max-width: 50rem;
+      max-height: 90vh;
+      overflow-y: auto;
+      width: 100%;
+      border: 3px solid var(--ink);
+      box-shadow: 0 8px 0 var(--ink);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--line);
+    }
+    .modal-header h2 {
+      font-family: "Bricolage Grotesque", Figtree, sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 2rem;
+      cursor: pointer;
+      color: var(--muted);
+      line-height: 1;
+    }
+    .close-btn:hover {
+      color: var(--err);
+    }
+    .detail-row {
+      display: flex;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .detail-label {
+      font-weight: 700;
+      min-width: 12rem;
+      color: var(--muted);
+    }
+    .detail-value {
+      flex: 1;
+    }
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+    @media (max-width: 50rem) {
+      .table-header, .table-row {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+      }
+      .table-header {
+        display: none;
+      }
+      .table-row {
+        padding: 1.5rem;
+        border: 3px solid var(--ink);
+        border-radius: 1rem;
+        margin-bottom: 1rem;
+      }
+      .cell {
+        white-space: normal;
+      }
+      .cell::before {
+        content: attr(data-label);
+        font-weight: 700;
+        display: block;
+        margin-bottom: 0.25rem;
+        color: var(--muted);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>Tableau de bord MAMAORA</h1>
+    <div class="header-actions">
+      <button class="btn btn-primary" id="exportBtn">Exporter CSV</button>
+      <button class="btn btn-ghost" id="logoutBtn">Déconnexion</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-value" id="totalResponses">0</div>
+        <div class="stat-label">Total des réponses</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="todayResponses">0</div>
+        <div class="stat-label">Réponses aujourd'hui</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Rechercher par nom, ville, situation...">
+      </div>
+      <select class="filter-select" id="filterSelect">
+        <option value="">Toutes les situations</option>
+        <option value="entrepreneure / commerçante">Entrepreneure / Commerçante</option>
+        <option value="agricultrice / transformatrice">Agricultrice / Transformatrice</option>
+        <option value="salariée">Salariée</option>
+        <option value="sans activité">Sans activité</option>
+        <option value="autre">Autre</option>
+      </select>
+    </div>
+
+    <div class="loader" id="loader"></div>
+
+    <div class="responses-table" id="responsesTable">
+      <div class="table-header">
+        <div>Nom</div>
+        <div>Ville</div>
+        <div>Situation</div>
+        <div>Date</div>
+        <div>Actions</div>
+      </div>
+      <div id="responsesList"></div>
+    </div>
+  </main>
+
+  <div class="modal" id="detailModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Détails de la réponse</h2>
+        <button class="close-btn" id="closeModal">&times;</button>
+      </div>
+      <div id="detailContent"></div>
+    </div>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('adminToken');
+    if (!token) {
+      window.location.href = 'admin.html';
+    }
+
+    let allResponses = [];
+    let filteredResponses = [];
+
+    async function loadResponses() {
+      const loader = document.getElementById('loader');
+      loader.classList.add('active');
+
+      try {
+        const response = await fetch(`/api/responses?token=${token}`);
+        const data = await response.json();
+
+        if (data.responses) {
+          allResponses = data.responses;
+          filteredResponses = [...allResponses];
+          updateStats();
+          renderResponses();
+        } else {
+          alert('Erreur de chargement');
+          window.location.href = 'admin.html';
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Erreur de chargement');
+        window.location.href = 'admin.html';
+      } finally {
+        loader.classList.remove('active');
+      }
+    }
+
+    function updateStats() {
+      const total = allResponses.length;
+      const today = new Date().toDateString();
+      const todayCount = allResponses.filter(r => new Date(r.created_at).toDateString() === today).length;
+
+      document.getElementById('totalResponses').textContent = total;
+      document.getElementById('todayResponses').textContent = todayCount;
+    }
+
+    function renderResponses() {
+      const container = document.getElementById('responsesList');
+
+      if (filteredResponses.length === 0) {
+        container.innerHTML = '<div class="empty-state">Aucune réponse trouvée</div>';
+        return;
+      }
+
+      container.innerHTML = filteredResponses.map(r => `
+        <div class="table-row">
+          <div class="cell cell-name" data-label="Nom">${r.prenom || 'Anonyme'}</div>
+          <div class="cell" data-label="Ville">${r.ville || '-'}</div>
+          <div class="cell" data-label="Situation">${r.situation || '-'}</div>
+          <div class="cell cell-date" data-label="Date">${formatDate(r.created_at)}</div>
+          <div class="actions-cell">
+            <button class="btn btn-primary action-btn" onclick="viewDetail(${r.id})">Voir</button>
+            <button class="btn btn-danger action-btn" onclick="deleteResponse(${r.id})">Supprimer</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function viewDetail(id) {
+      const response = allResponses.find(r => r.id === id);
+      if (!response) return;
+
+      const content = document.getElementById('detailContent');
+      content.innerHTML = `
+        <div class="detail-row">
+          <div class="detail-label">Prénom</div>
+          <div class="detail-value">${response.prenom || 'Non renseigné'}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Ville / Quartier</div>
+          <div class="detail-value">${response.ville || 'Non renseigné'}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Âge</div>
+          <div class="detail-value">${response.age || 'Non renseigné'}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Situation</div>
+          <div class="detail-value">${response.situation || 'Non renseigné'}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Activité</div>
+          <div class="detail-value">${response.activite || 'Non renseigné'}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Canaux de découverte</div>
+          <div class="detail-value">${response.canaux ? response.canaux.join(', ') : 'Non renseigné'}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Dernière cliente</div>
+          <div class="detail-value">${response.derniere || 'Non renseigné'}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Difficultés</div>
+          <div class="detail-value">${response.diff ? response.diff.join(', ') : 'Non renseigné'}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">A payé pour visibilité</div>
+          <div class="detail-value">${response.paye || 'Non renseigné'}${response.paye_detail ? ' (' + response.paye_detail + ')' : ''}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Regarderait des interviews</div>
+          <div class="detail-value">${response.regarder || 'Non renseigné'}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Accepte de raconter son histoire</div>
+          <div class="detail-value">${response.raconter || 'Non renseigné'}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Sujets souhaités</div>
+          <div class="detail-value">${response.sujets || 'Non renseigné'}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Veut apparaître dans l'annuaire</div>
+          <div class="detail-value">${response.annuaire || 'Non renseigné'}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Peut payer par mois</div>
+          <div class="detail-value">${response.prix || 'Non renseigné'}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Mot libre</div>
+          <div class="detail-value">${response.libre || 'Non renseigné'}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">WhatsApp</div>
+          <div class="detail-value">${response.tel || 'Non renseigné'}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Date de soumission</div>
+          <div class="detail-value">${formatDate(response.created_at)}</div>
+        </div>
+      `;
+
+      document.getElementById('detailModal').classList.add('active');
+    }
+
+    async function deleteResponse(id) {
+      if (!confirm('Êtes-vous sûr de vouloir supprimer cette réponse ?')) return;
+
+      try {
+        const response = await fetch(`/api/delete?token=${token}&id=${id}`, {
+          method: 'DELETE'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          allResponses = allResponses.filter(r => r.id !== id);
+          filteredResponses = filteredResponses.filter(r => r.id !== id);
+          updateStats();
+          renderResponses();
+        } else {
+          alert('Erreur lors de la suppression');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Erreur lors de la suppression');
+      }
+    }
+
+    function exportCSV() {
+      if (filteredResponses.length === 0) {
+        alert('Aucune donnée à exporter');
+        return;
+      }
+
+      const headers = ['Prénom', 'Ville', 'Âge', 'Situation', 'Activité', 'Canaux', 'Dernière cliente', 'Difficultés', 'A payé', 'Détail paiement', 'Regarderait interviews', 'Raconter histoire', 'Sujets', 'Annuaire', 'Prix', 'Mot libre', 'WhatsApp', 'Date'];
+      const rows = filteredResponses.map(r => [
+        r.prenom || '',
+        r.ville || '',
+        r.age || '',
+        r.situation || '',
+        r.activite || '',
+        r.canaux ? r.canaux.join('; ') : '',
+        r.derniere || '',
+        r.diff ? r.diff.join('; ') : '',
+        r.paye || '',
+        r.paye_detail || '',
+        r.regarder || '',
+        r.raconter || '',
+        r.sujets || '',
+        r.annuaire || '',
+        r.prix || '',
+        r.libre || '',
+        r.tel || '',
+        formatDate(r.created_at)
+      ]);
+
+      const csvContent = [headers, ...rows]
+        .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+        .join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `mamaora-responses-${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+    }
+
+    // Event listeners
+    document.getElementById('closeModal').addEventListener('click', () => {
+      document.getElementById('detailModal').classList.remove('active');
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('adminToken');
+      window.location.href = 'admin.html';
+    });
+
+    document.getElementById('exportBtn').addEventListener('click', exportCSV);
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      filteredResponses = allResponses.filter(r =>
+        (r.prenom && r.prenom.toLowerCase().includes(query)) ||
+        (r.ville && r.ville.toLowerCase().includes(query)) ||
+        (r.situation && r.situation.toLowerCase().includes(query))
+      );
+      renderResponses();
+    });
+
+    document.getElementById('filterSelect').addEventListener('change', (e) => {
+      const filter = e.target.value;
+      if (filter) {
+        filteredResponses = allResponses.filter(r => r.situation === filter);
+      } else {
+        filteredResponses = [...allResponses];
+      }
+      renderResponses();
+    });
+
+    // Load responses on page load
+    loadResponses();
+  </script>
+</body>
+</html>

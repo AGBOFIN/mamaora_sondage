@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Administration - MAMAORA</title>
+  <meta name="theme-color" content="#2d1a9c">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --indigo: #2d1a9c;
+      --ink: #120a45;
+      --pink: #ff4fa3;
+      --sun: #ffd23f;
+      --mint: #2fe0a8;
+      --paper: #f4f1ff;
+      --text: #120a45;
+      --muted: #574f8f;
+      --line: #d6cffb;
+      --err: #b3261e;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --paper: #0e0928;
+        --text: #f1eeff;
+        --muted: #b9b1ee;
+        --line: #3a2f86;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--paper);
+      color: var(--text);
+      font: 400 1.0625rem/1.55 Figtree, system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+    }
+    .login-container {
+      max-width: 22rem;
+      width: 100%;
+      background: var(--paper);
+      border: 3px solid var(--ink);
+      border-radius: 1.6rem;
+      padding: 2rem;
+      box-shadow: 0 8px 0 var(--ink);
+    }
+    h1 {
+      font-family: "Bricolage Grotesque", Figtree, sans-serif;
+      font-weight: 800;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    .subtitle {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    input[type="password"] {
+      width: 100%;
+      font: 600 1.15rem Figtree, sans-serif;
+      color: var(--ink);
+      background: #fff;
+      border: 3px solid var(--ink);
+      border-radius: 1.2rem;
+      padding: 1rem 1.1rem;
+      box-shadow: 0 5px 0 var(--ink);
+    }
+    input[type="password"]:focus {
+      outline: none;
+      box-shadow: 0 5px 0 var(--pink), 0 0 0 4px var(--ink);
+    }
+    .btn {
+      display: inline-block;
+      border: 0;
+      border-radius: 3rem;
+      padding: 1rem 1.8rem;
+      font: 700 1.05rem Figtree, sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      background: var(--indigo);
+      color: #fff;
+      width: 100%;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 0 rgba(0,0,0,0.25);
+    }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .error {
+      background: var(--err);
+      color: #fff;
+      padding: 0.75rem 1rem;
+      border-radius: 0.8rem;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      display: none;
+    }
+    .error.show {
+      display: block;
+    }
+    .loader {
+      display: none;
+      width: 2rem;
+      height: 2rem;
+      margin: 1rem auto;
+      border: 4px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    .loader.active {
+      display: block;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .back-link {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+    .back-link a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .back-link a:hover {
+      color: var(--indigo);
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>Administration</h1>
+    <p class="subtitle">Espace réservé à l'équipe MAMAORA</p>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="code">Code d'accès</label>
+        <input type="password" id="code" name="code" placeholder="Entrez votre code" required autocomplete="off">
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn">Se connecter</button>
+      <div class="loader" id="loader"></div>
+      <div class="error" id="error"></div>
+    </form>
+
+    <div class="back-link">
+      <a href="mamaora.html">← Retour au sondage</a>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const loader = document.getElementById('loader');
+    const error = document.getElementById('error');
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const code = document.getElementById('code').value.trim();
+
+      if (!code) {
+        showError('Veuillez entrer un code');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      loader.classList.add('active');
+      error.classList.remove('show');
+
+      try {
+        const response = await fetch('/api/auth', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ code })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          localStorage.setItem('adminToken', data.token);
+          window.location.href = 'dashboard.html';
+        } else {
+          showError('Code incorrect');
+        }
+      } catch (err) {
+        console.error(err);
+        showError('Erreur de connexion');
+      } finally {
+        submitBtn.disabled = false;
+        loader.classList.remove('active');
+      }
+    });
+
+    function showError(message) {
+      error.textContent = message;
+      error.classList.add('show');
+    }
+
+    // Vérifier si déjà connecté
+    const existingToken = localStorage.getItem('adminToken');
+    if (existingToken) {
+      window.location.href = 'dashboard.html';
+    }
+  </script>
+</body>
+</html>

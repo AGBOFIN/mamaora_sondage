@@ -42,7 +42,7 @@ module.exports = async function handler(req, res) {
 
     if (error) {
       console.error('Error fetching responses:', error);
-      return res.status(500).json({ error: 'Failed to fetch responses' });
+      return res.status(500).json({ error: `Failed to fetch responses: ${error.message}` });
     }
 
     // Parser les JSON

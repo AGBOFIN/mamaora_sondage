@@ -46,12 +46,12 @@ module.exports = async function handler(req, res) {
 
     if (error) {
       console.error('Supabase error:', error);
-      return res.status(500).json({ error: 'Failed to save response' });
+      return res.status(500).json({ error: `Failed to save response: ${error.message}` });
     }
 
     return res.status(200).json({ success: true });
   } catch (error) {
     console.error('Error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: `Internal server error: ${error.message}` });
   }
 }

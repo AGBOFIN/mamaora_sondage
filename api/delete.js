@@ -42,7 +42,7 @@ module.exports = async function handler(req, res) {
 
     if (error) {
       console.error('Error deleting response:', error);
-      return res.status(500).json({ error: 'Failed to delete response' });
+      return res.status(500).json({ error: `Failed to delete response: ${error.message}` });
     }
 
     return res.status(200).json({ success: true });

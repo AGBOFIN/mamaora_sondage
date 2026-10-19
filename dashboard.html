@@ -386,6 +386,20 @@
 
       try {
         const response = await fetch(`/api/responses?token=${token}`);
+
+        if (response.status === 401) {
+          alert('Session expirée. Veuillez vous reconnecter.');
+          localStorage.removeItem('adminToken');
+          window.location.href = 'admin.html';
+          return;
+        }
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          alert(`Erreur serveur (${response.status}): ${errorData.error || 'Erreur inconnue'}`);
+          return;
+        }
+
         const data = await response.json();
 
         if (data.responses) {
@@ -394,13 +408,11 @@
           updateStats();
           renderResponses();
         } else {
-          alert('Erreur de chargement');
-          window.location.href = 'admin.html';
+          alert('Format de réponse invalide');
         }
       } catch (err) {
         console.error(err);
-        alert('Erreur de chargement');
-        window.location.href = 'admin.html';
+        alert('Erreur de connexion au serveur');
       } finally {
         loader.classList.remove('active');
       }
@@ -535,6 +547,19 @@
           method: 'DELETE'
         });
 
+        if (response.status === 401) {
+          alert('Session expirée. Veuillez vous reconnecter.');
+          localStorage.removeItem('adminToken');
+          window.location.href = 'admin.html';
+          return;
+        }
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          alert(`Erreur serveur (${response.status}): ${errorData.error || 'Erreur inconnue'}`);
+          return;
+        }
+
         const data = await response.json();
 
         if (data.success) {
@@ -547,7 +572,7 @@
         }
       } catch (err) {
         console.error(err);
-        alert('Erreur lors de la suppression');
+        alert('Erreur de connexion au serveur');
       }
     }
 

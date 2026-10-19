@@ -199,6 +199,16 @@
           body: JSON.stringify({ code })
         });
 
+        if (response.status === 401) {
+          showError('Code incorrect');
+          return;
+        }
+
+        if (!response.ok) {
+          showError('Erreur serveur. Veuillez réessayer.');
+          return;
+        }
+
         const data = await response.json();
 
         if (data.success) {

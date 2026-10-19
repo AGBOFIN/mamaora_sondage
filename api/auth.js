@@ -7,7 +7,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const ADMIN_CODE = process.env.ADMIN_CODE;
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -19,8 +19,8 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Code required' });
     }
 
-    // Vérifier le code admin
-    if (code !== ADMIN_CODE) {
+    // Vérifier le code admin avec trim
+    if (code.trim() !== ADMIN_CODE.trim()) {
       return res.status(401).json({ error: 'Invalid code' });
     }
 

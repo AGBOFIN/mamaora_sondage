@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MAMAORA — Une maman, une histoire, une valeur</title>
+  <meta name="theme-color" content="#2d1a9c">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --indigo: #2d1a9c;
+      --ink: #120a45;
+      --pink: #ff4fa3;
+      --sun: #ffd23f;
+      --mint: #2fe0a8;
+      --paper: #f4f1ff;
+      --text: #120a45;
+      --muted: #574f8f;
+      --line: #d6cffb;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --paper: #0e0928;
+        --text: #f1eeff;
+        --muted: #b9b1ee;
+        --line: #3a2f86;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--paper);
+      color: var(--text);
+      font: 400 1.0625rem/1.55 Figtree, system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .hero {
+      background: var(--indigo);
+      color: #fff;
+      padding: 4rem 1.25rem;
+      text-align: center;
+    }
+    .hero h1 {
+      font-family: "Bricolage Grotesque", Figtree, sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.5rem, 8vw, 5rem);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+    .hero h1 span { color: var(--sun); }
+    .hero p {
+      max-width: 30rem;
+      margin: 0 auto 2rem;
+      font-size: 1.15rem;
+      color: #e0dbff;
+    }
+    .btn {
+      display: inline-block;
+      border: 0;
+      border-radius: 3rem;
+      padding: 1rem 1.8rem;
+      font: 700 1.05rem Figtree, sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      background: var(--sun);
+      color: var(--ink);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-3px) rotate(-1deg);
+      box-shadow: 0 10px 0 rgba(0,0,0,0.25);
+    }
+    .btn.ghost {
+      background: transparent;
+      color: #fff;
+      border: 2px solid #fff;
+    }
+    .content {
+      flex: 1;
+      padding: 4rem 1.25rem;
+      max-width: 42rem;
+      margin: 0 auto;
+    }
+    .content h2 {
+      font-family: "Bricolage Grotesque", Figtree, sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 5vw, 3rem);
+      margin-bottom: 1.5rem;
+    }
+    .content p {
+      margin-bottom: 1.5rem;
+      line-height: 1.7;
+    }
+    .cards {
+      display: grid;
+      gap: 1rem;
+      margin-top: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    }
+    .card {
+      border-radius: 1.6rem;
+      padding: 1.5rem;
+      min-height: 11rem;
+      font-size: 1.15rem;
+      font-weight: 600;
+      display: flex;
+      align-items: flex-end;
+      transition: transform 0.3s;
+    }
+    .card:hover {
+      transform: rotate(-2deg) scale(1.03);
+    }
+    footer {
+      background: var(--ink);
+      color: #bdb6ee;
+      padding: 2rem 1.25rem;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+    .success {
+      background: var(--mint);
+      color: var(--ink);
+      padding: 2rem;
+      border-radius: 1.6rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1rem;
+      background: var(--ink);
+      color: var(--mint);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .success-icon svg {
+      width: 45px;
+      height: 45px;
+      fill: currentColor;
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <h1>Une maman,<br><span>une histoire,</span><br>une valeur.</h1>
+    <p>Nous préparons un espace pour raconter le parcours des mamans togolaises et faire connaître leurs activités.</p>
+    <a href="mamaora.html" class="btn">Participer au sondage</a>
+  </header>
+
+  <main class="content">
+    <div class="success">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      </div>
+      <h2>Merci pour votre participation !</h2>
+      <p>Vos réponses ont été envoyées à l'équipe MAMAORA.</p>
+    </div>
+
+    <h2>À propos de MAMAORA</h2>
+    <p>MAMAORA est un projet qui vise à mettre en valeur les mamans entrepreneures togolaises. Nous créons un espace où elles peuvent partager leurs histoires, se faire connaître et trouver de nouvelles opportunités.</p>
+
+    <h2>Ce que nous prévoyons</h2>
+    <div class="cards">
+      <div class="card" style="background: var(--sun); color: var(--ink)">Un annuaire de mamans entrepreneures</div>
+      <div class="card" style="background: var(--pink); color: var(--ink)">Des interviews et podcasts inspirants</div>
+      <div class="card" style="background: var(--mint); color: var(--ink)">Des formations et ressources adaptées</div>
+    </div>
+  </main>
+
+  <footer>
+    <p>MAMAORA, Togo. Ensemble pour valoriser les mamans entrepreneures.</p>
+  </footer>
+</body>
+</html>

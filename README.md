@@ -38,8 +38,9 @@ Puis ouvrez `http://localhost:8000/mamaora.html` dans votre navigateur.
 - **Sauvegarde automatique** : Les réponses sont sauvegardées localement (localStorage)
 - **Navigation intuitive** : Étape par étape avec animations
 - **Validation** : Vérification des champs obligatoires
-- **Export WhatsApp** : Envoi direct des réponses via WhatsApp
-- **Partage social** : Boutons pour partager sur WhatsApp et Facebook
+- **Envoi WhatsApp automatique** : Les réponses sont envoyées directement via WhatsApp sans afficher le numéro de destination
+- **Redirection automatique** : Après l'envoi, l'utilisateur est redirigé vers la page vitrine
+- **Page vitrine** : Page d'accueil présentant le projet MAMAORA
 
 ## 🎨 Design
 
@@ -52,7 +53,10 @@ Puis ouvrez `http://localhost:8000/mamaora.html` dans votre navigateur.
 
 ```
 MAMAORA/
-└── mamaora.html    # Fichier unique contenant HTML, CSS et JavaScript
+├── index.html      # Page d'accueil vitrine
+├── mamaora.html    # Formulaire de sondage
+├── vercel.json     # Configuration Vercel
+└── README.md       # Documentation
 ```
 
 ## 🔧 Configuration

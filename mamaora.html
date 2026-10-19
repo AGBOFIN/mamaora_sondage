@@ -246,7 +246,7 @@ input[type=text]:focus,input[type=tel]:focus,textarea:focus{outline:none;box-sha
    <h2 class="disp" style="font-size:3rem">Merci !</h2>
    <p>Vos réponses sont prêtes. Cliquez sur le bouton ci-dessous pour les envoyer à l’équipe MAMAORA.</p>
    <div class="msgbox" id="msg"></div>
-   <div class="actions"><button class="btn" id="sendBtn" type="button">Envoyer mes réponses</button><button class="btn ghost" id="copy" type="button">Copier</button><button class="btn ghost" id="back" type="button">Modifier</button></div>
+   <div class="actions"><button class="btn" id="sendBtn" type="button">Envoyer mes réponses</button></div>
    <div class="share-section"><p>Partagez ce sondage avec d’autres mamans.</p><div class="share-buttons"><a class="btn" id="share-wa" href="#" target="_blank" rel="noopener">WhatsApp</a><button class="btn ghost" id="share-fb" type="button">Facebook</button></div></div>
    <p class="err" id="cerr" role="status"></p>
   </div>
@@ -439,25 +439,22 @@ form.addEventListener("submit", function(e){
   }, 1500);
 });
 
-// Bouton d'envoi qui cache le numéro
+// Bouton d'envoi qui cache le numero et redirige
 document.getElementById("sendBtn").addEventListener("click", function(){
   var text = document.getElementById("msg").textContent;
   var waUrl = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(text);
-  
-  var cerr = document.getElementById("cerr");
-  // Ouvrir WhatsApp tout de suite (dans le clic) pour ne pas être bloqué par le navigateur
-  var w = window.open(waUrl, "_blank");
+
+  // Afficher le modal de chargement
   sendModal.classList.add("active");
+
+  // Ouvrir WhatsApp en arriere-plan
+  window.open(waUrl, "_blank");
+
+  // Rediriger vers la page vitrine apres un court delai
   setTimeout(function(){
     sendModal.classList.remove("active");
-    cerr.style.color = "#0a7a55";
-    if (w) {
-      cerr.textContent = "WhatsApp s'est ouvert : appuyez sur « Envoyer » pour terminer.";
-    } else {
-      cerr.style.color = "";
-      cerr.innerHTML = 'Le navigateur a bloqué l’ouverture. <a href="' + waUrl + '" target="_blank" rel="noopener" style="color:inherit;font-weight:800">Touchez ici pour ouvrir WhatsApp</a> ou utilisez « Copier ».';
-    }
-  }, 900);
+    window.location.href = "index.html";
+  }, 1500);
 });
 
 document.getElementById("back").addEventListener("click", function(){

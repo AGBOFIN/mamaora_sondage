@@ -53,8 +53,8 @@ Puis ouvrez `http://localhost:8000/mamaora.html` dans votre navigateur.
 
 ```
 MAMAORA/
-├── index.html      # Page d'accueil vitrine
-├── mamaora.html    # Formulaire de sondage
+├── mamaora.html    # Page principale - Formulaire de sondage
+├── index.html      # Page de remerciement affichée après l'envoi
 ├── vercel.json     # Configuration Vercel
 └── README.md       # Documentation
 ```

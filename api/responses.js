@@ -1,19 +1,6 @@
 // Vercel Function pour récupérer les réponses (admin only)
-const { createClient } = require('@supabase/supabase-js');
+const supabase = require('./supabaseClient');
 const { verifyToken } = require('./verifyToken');
-
-// Normaliser l'URL Supabase
-function normalizeSupabaseUrl(url) {
-  if (!url) return url;
-  let normalized = url.trim();
-  normalized = normalized.replace(/\/$/, '');
-  normalized = normalized.replace(/\/rest\/v1\/rest\/v1/, '/rest/v1');
-  return normalized;
-}
-
-const supabaseUrl = normalizeSupabaseUrl(process.env.SUPABASE_URL);
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 module.exports = async function handler(req, res) {
   // CORS headers
@@ -42,8 +29,6 @@ module.exports = async function handler(req, res) {
     if (!decoded) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-
-    console.log('Supabase URL:', supabaseUrl);
 
     // Récupérer les réponses
     const { data: responses, error } = await supabase

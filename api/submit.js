@@ -1,21 +1,5 @@
 // Vercel Function pour soumettre les réponses du sondage
-const { createClient } = require('@supabase/supabase-js');
-
-// Normaliser l'URL Supabase
-function normalizeSupabaseUrl(url) {
-  if (!url) return url;
-  let normalized = url.trim();
-  // Supprimer le slash final
-  normalized = normalized.replace(/\/$/, '');
-  // Supprimer /rest/v1 en double
-  normalized = normalized.replace(/\/rest\/v1\/rest\/v1/, '/rest/v1');
-  return normalized;
-}
-
-// Initialiser le client Supabase
-const supabaseUrl = normalizeSupabaseUrl(process.env.SUPABASE_URL);
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = require('./supabaseClient');
 
 module.exports = async function handler(req, res) {
   // CORS headers
@@ -41,7 +25,7 @@ module.exports = async function handler(req, res) {
     const data = req.body;
 
     console.log('Received data:', JSON.stringify(data));
-    console.log('Supabase URL:', supabaseUrl);
+    console.log('Table name:', 'responses');
 
     // Validation basique
     if (!data) {
@@ -74,7 +58,9 @@ module.exports = async function handler(req, res) {
 
     if (error) {
       console.error('Supabase error:', error);
-      console.error('Error details:', JSON.stringify(error, null, 2));
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      console.error('Error details:', JSON.stringify(error.details, null, 2));
       return res.status(500).json({ error: `Failed to save response: ${error.message}` });
     }
 

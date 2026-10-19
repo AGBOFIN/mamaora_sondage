@@ -7,6 +7,20 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 module.exports = async function handler(req, res) {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   // Seulement POST autorisé
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -14,6 +28,8 @@ module.exports = async function handler(req, res) {
 
   try {
     const data = req.body;
+
+    console.log('Received data:', JSON.stringify(data));
 
     // Validation basique
     if (!data) {
@@ -49,6 +65,7 @@ module.exports = async function handler(req, res) {
       return res.status(500).json({ error: `Failed to save response: ${error.message}` });
     }
 
+    console.log('Response saved successfully');
     return res.status(200).json({ success: true });
   } catch (error) {
     console.error('Error:', error);

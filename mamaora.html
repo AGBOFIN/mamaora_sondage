@@ -134,7 +134,7 @@ input[type=text]:focus,input[type=tel]:focus,textarea:focus{outline:none;box-sha
 </div></section>
 <section class="cta"><h2 class="disp" style="font-size:clamp(2.4rem,7vw,5rem)">Votre histoire<br>compte.</h2><a class="btn" href="#" data-start>Commencer le sondage</a></section>
 </main>
-<footer><div class="wrap">MAMAORA, Togo. Vos réponses servent uniquement à comprendre les besoins des mamans et à préparer le projet.<br><a href="admin.html" style="color:inherit;opacity:0.5;font-size:0.85rem;text-decoration:none;margin-top:0.5rem;display:inline-block">Administration</a></div></footer>
+<footer><div class="wrap">MAMAORA, Togo. Vos réponses servent uniquement à comprendre les besoins des mamans et à préparer le projet.</div></footer>
 
 <div class="stage" id="stage" data-cat="0">
  <div class="blob b1"></div><div class="blob b2"></div><div class="big" id="big" aria-hidden="true">01</div>
@@ -441,6 +441,7 @@ form.addEventListener("submit", function(e){
   };
 
   // Envoyer à l'API
+  console.log('Envoi des données:', formData);
   fetch('/api/submit', {
     method: 'POST',
     headers: {
@@ -449,8 +450,10 @@ form.addEventListener("submit", function(e){
     body: JSON.stringify(formData)
   })
   .then(function(response){
+    console.log('Réponse API:', response.status);
     if (!response.ok) {
       return response.json().then(function(errData) {
+        console.error('Erreur API:', errData);
         throw new Error(errData.error || 'Erreur serveur');
       }).catch(function() {
         throw new Error('Erreur serveur');
@@ -459,6 +462,7 @@ form.addEventListener("submit", function(e){
     return response.json();
   })
   .then(function(data){
+    console.log('Succès:', data);
     loader.classList.remove("active");
     form.style.display = "none";
     done.style.display = "block";
@@ -467,7 +471,7 @@ form.addEventListener("submit", function(e){
   .catch(function(error){
     console.error('Error:', error);
     loader.classList.remove("active");
-    err.textContent = "Une erreur est survenue. Veuillez réessayer.";
+    err.textContent = "Une erreur est survenue (" + error.message + "). Veuillez réessayer.";
   });
 });
 
